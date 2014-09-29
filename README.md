@@ -9,5 +9,5 @@ A web application that facilitates the population of a database about slavery in
 to get started with GIT:
 https://help.github.com/articles/set-up-git
 
-learning GIT in 15 min:
+learning GIT cmd line in 15 min:
 https://try.github.io/levels/1/challenges/1
