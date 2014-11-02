@@ -1,0 +1,379 @@
+
+DATABASE SETUP 
+1) Install Postgres SQL version-  Postgres Version 9.3.5 from http://www.enterprisedb.com/products-services-training/pgdownload
+2) Create a database  called FOTM.
+3) Create the below tables in the FOTM database.
+4) Create the INSERT_INTO_FOTM stored procedure.
+
+TABLES TO BE CREATED
+STATES TABLE:
+CREATE TABLE States (
+    StateID uuid NOT NULL,
+    Abbrev character varying(2) NOT NULL,
+    Name character varying(50),
+    RefID character varying,
+    PolyCoords polygon,
+    Authority character varying
+);
+
+ALTER TABLE ONLY States
+    ADD CONSTRAINT PK_StateID PRIMARY KEY (StateID);
+
+COUNTIES TABLE
+CREATE TABLE Counties (
+    CountyID uuid NOT NULL,
+    StateID uuid NOT NULL,
+    Name character varying(50) NOT NULL,
+    PolyCoords polygon,
+    RefID character varying,
+    Authority character varying
+);
+
+ALTER TABLE ONLY Counties
+    ADD CONSTRAINT PK_CountyID PRIMARY KEY (CountyID);
+
+    
+ALTER TABLE ONLY Counties
+    ADD CONSTRAINT FK_StateID FOREIGN KEY (StateID) REFERENCES States(StateID);
+
+OWNERS TABLE
+CREATE TABLE Owners (
+    OwnerID uuid NOT NULL,
+    F_Name character varying,
+    L_Name character varying,
+    StateID uuid,
+    CountyID uuid,
+    OwnerPrevFName character varying(50),
+    OwnerPrevLName character varying(100)
+);
+
+ALTER TABLE ONLY Owners
+    ADD CONSTRAINT PK_OwnerID PRIMARY KEY (OwnerID);
+
+ALTER TABLE ONLY Owners
+    ADD CONSTRAINT CountyID FOREIGN KEY (CountyID) REFERENCES Counties(CountyID);
+
+ALTER TABLE ONLY Owners
+    ADD CONSTRAINT FK_StateID FOREIGN KEY (StateID) REFERENCES States(StateID)
+
+CITIES TABLE
+CREATE TABLE Cities (
+    CityID uuid NOT NULL,
+    Name character varying(50),
+    StateID uuid NOT NULL,
+    RefID character varying,
+    PolyCoords polygon,
+    Authority character varying
+);
+
+ALTER TABLE ONLY Cities
+    ADD CONSTRAINT PK_CityID PRIMARY KEY (CityID);
+
+ ALTER TABLE ONLY Cities
+    ADD CONSTRAINT FK_StateID FOREIGN KEY (StateID) REFERENCES States(StateID);
+NEWSPAPERS TABLE
+
+CREATE TABLE Newspapers (
+    NewspaperID uuid NOT NULL,
+    CityID uuid NOT NULL,
+    CountyID uuid,
+    StateID uuid NOT NULL,
+    Name character varying
+);
+
+ALTER TABLE ONLY Newspapers
+    ADD CONSTRAINT PK_NewspaperID PRIMARY KEY (NewspaperID);
+
+NEWSPAPEREDITIONS TABLE
+
+CREATE TABLE NewspaperEditions (
+    NewspaperEditionID uuid NOT NULL,
+    NewspaperID uuid NOT NULL,
+    DistributionDate date,
+    UniqueIssueID character varying,
+    SourceURL character varying,
+    Analogue character varying
+);
+
+ALTER TABLE ONLY NewspaperEditions
+    ADD CONSTRAINT PK_NewspaperEditionID PRIMARY KEY (NewspaperEditionID);
+
+ALTER TABLE ONLY NewspaperEditions
+    ADD CONSTRAINT FK_NewspaperID FOREIGN KEY (NewspaperID) REFERENCES Newspapers(NewspaperID);
+
+
+COLORS TABLE
+CREATE TABLE Colors (
+    ColorID uuid NOT NULL,
+    ColorName character varying
+);
+
+ALTER TABLE ONLY Colors
+    ADD CONSTRAINT PK_ColorID PRIMARY KEY (ColorID);
+
+RUNAWAYS TABLE
+CREATE TABLE Runaways (
+    RunawayID uuid NOT NULL,
+    SlaveName character varying,
+    SlaveGender character(1),
+    SlaveAge double precision,
+    SlaveHeightInches double precision,
+    SlaveWeightPounds double precision,
+    SlaveBuildDesc character varying,
+    SlaveMarksPhysicalAttributes character varying,
+    Notes character varying,
+    Date_Transcription character varying,
+    ColorID uuid
+);
+
+ALTER TABLE ONLY Runaways
+    ADD CONSTRAINT PK_RunawayID PRIMARY KEY (RunawayID);
+
+ALTER TABLE ONLY Runaways
+    ADD CONSTRAINT FK_Color FOREIGN KEY (ColorID) REFERENCES Colors(ColorID);
+
+RUNAWAYCHILDREN TABLE
+CREATE TABLE RunawayChildren (
+    RunawayChildID uuid NOT NULL,
+    Age double precision,
+    Gender character(1),
+    Name character varying
+);
+
+ALTER TABLE ONLY RunawayChildren
+    ADD CONSTRAINT PK_RunawayChildID PRIMARY KEY (RunawayChildID);
+
+RUNAWAYADS TABLE
+
+CREATE TABLE RunawayAds (
+    Runaway_AD_ID uuid NOT NULL,
+    RecordNumber integer,
+    NewspaperEditionID uuid NOT NULL,
+    Notes character varying,
+    OriginalImage bytea,
+    PageNumber integer,
+    isJailor boolean
+);
+
+ALTER TABLE ONLY RunawayAds
+    ADD CONSTRAINT PK_Runaway_AD_ID PRIMARY KEY (Runaway_AD_ID);
+
+
+ALTER TABLE ONLY RunawayAds
+    ADD CONSTRAINT FK_NewspaperEditionID FOREIGN KEY (NewspaperEditionID) REFERENCES NewspaperEditions(NewspaperEditionID);
+
+
+ADS_TO_RUNAWAYS TABLE
+CREATE TABLE Ads_To_Runaways (
+    Ads_To_RunawaysID uuid NOT NULL,
+    RunawayAdID uuid NOT NULL,
+    RunawayID uuid NOT NULL
+);
+
+ALTER TABLE ONLY Ads_To_Runaways
+    ADD CONSTRAINT PK_Ads_To_RunawaysID PRIMARY KEY (Ads_To_RunawaysID);
+
+ALTER TABLE ONLY Ads_To_Runaways
+    ADD CONSTRAINT FK_RunawayAdID FOREIGN KEY (RunawayAdID) REFERENCES RunawayAds(Runaway_AD_ID);
+
+ALTER TABLE ONLY Ads_To_Runaways
+    ADD CONSTRAINT FK_RunawayID FOREIGN KEY (RunawayID) REFERENCES Runaways(RunawayID);
+
+SLAVES_TO_CHILDREN TABLE
+CREATE TABLE Slaves_To_Children (
+    Slaves_To_ChildrenID uuid NOT NULL,
+    RunawayID uuid NOT NULL,
+    RunawayChildID uuid NOT NULL
+);
+
+	ALTER TABLE ONLY Slaves_To_Children
+    ADD CONSTRAINT PK_Slaves_To_ChildrenID PRIMARY KEY (Slaves_To_ChildrenID);
+
+    ALTER TABLE ONLY Slaves_To_Children
+    ADD CONSTRAINT FK_RunawayChildID FOREIGN KEY (RunawayChildID) REFERENCES RunawayChildren(RunawayChildID);
+
+    ALTER TABLE ONLY Slaves_To_Children
+    ADD CONSTRAINT FK_RunawayID FOREIGN KEY (RunawayID) REFERENCES Runaways(RunawayID);
+
+RUNAWAYEVENTS TABLE
+CREATE TABLE RunawayEvents (
+    RunawayEventID uuid NOT NULL,
+    OwnerID uuid,
+    StateCaughtID uuid,
+    SoldFromStateID uuid,
+    SoldFromCountyID uuid,
+    SoldFromCityID uuid,
+    DateEntered date,
+    SlaveWearingDesc character varying(500),
+    SlaveLanguageSpoken character varying(100),
+    WasSlaveRecentlySold boolean,
+    HeadedDesc character varying(200),
+    wasHeadedHome boolean,
+    ranAlone boolean,
+    RanWithNumber integer,
+    motherAndChildren boolean,
+    Ran_Mid_ForcedMigration boolean,
+    Notes character varying(1000),
+    SlaveMarksScarsMutilations character varying(500),
+    isAgeApproximate boolean,
+    wasCaught boolean,
+    Reward double precision,
+    RunawayID uuid,
+    Runaway_AD_ID uuid
+);
+
+ALTER TABLE ONLY RunawayEvents
+    ADD CONSTRAINT pk_runawayeventid PRIMARY KEY (RunawayEventID);
+
+ALTER TABLE ONLY RunawayEvents
+    ADD CONSTRAINT fk_ownerid FOREIGN KEY (OwnerID) REFERENCES Owners(OwnerID);
+
+ALTER TABLE ONLY RunawayEvents
+    ADD CONSTRAINT fk_runaway_ad_id FOREIGN KEY (Runaway_AD_ID) REFERENCES RunawayAds(Runaway_AD_ID);
+
+ALTER TABLE ONLY RunawayEvents
+    ADD CONSTRAINT fk_runawayid FOREIGN KEY (RunawayID) REFERENCES Runaways(RunawayID);
+
+ALTER TABLE ONLY RunawayEvents
+    ADD CONSTRAINT fk_soldfromcityid FOREIGN KEY (SoldFromCityID) REFERENCES Cities(CityID);
+
+ALTER TABLE ONLY RunawayEvents
+    ADD CONSTRAINT fk_soldfromcountyid FOREIGN KEY (SoldFromCountyID) REFERENCES Counties(CountyID);
+
+ALTER TABLE ONLY RunawayEvents
+    ADD CONSTRAINT fk_soldfromstateid FOREIGN KEY (SoldFromStateID) REFERENCES States(StateID);
+
+ALTER TABLE ONLY RunawayEvents
+    ADD CONSTRAINT fk_statecaughtid FOREIGN KEY (StateCaughtID) REFERENCES States(StateID);
+
+STORED PROCEDURE
+
+create type childinfo as
+(
+  childname character varying,
+  childage float,
+  childgender char
+);
+
+
+CREATE OR REPLACE FUNCTION INSERT_INTO_FOTM(in_statename character varying, in_countyname character varying, in_cityname character varying,
+ in_newspapername character varying, in_fname character varying, in_lname character varying, in_ownerprevfname character varying,
+  in_ownerprevlname character varying, in_newspaperdistdate date, in_sourceurl character varying, in_runawayadsnotes character varying,
+   in_pagenumber integer, in_isjailor boolean, in_slavename character varying, in_gender character, in_age double precision, 
+   in_height double precision, in_weight double precision, in_builddesc character varying, in_marksphyattributes character varying,
+    in_notes character varying, in_color character varying, in_childinfo childinfo[],
+    in_statecaught character varying, in_statesold character varying,
+    in_countysold character varying, in_citysold character varying, in_stateranfrom character varying,in_countyranfrom character varying,
+    in_cityranfrom character varying,in_dateentered date,in_slavewearingdesc character varying, in_slavelanguagespoken character varying, 
+    in_wasslaverecentlysold boolean,in_headeddesc character varying,in_washeadedhome boolean, in_ranalone boolean, in_ranwithnumber int,
+    in_motherandchildren boolean,in_ranmidforcedmigration boolean, in_runawayeventnotes character varying,in_slavemarksscarmutilation 
+    character varying,in_isageapproximate boolean,in_wascaught boolean,in_reward float)
+  RETURNS void AS
+$BODY$
+DECLARE 
+var_stateid uuid;
+var_countyid uuid;
+var_cityid uuid;
+var_newspaperid uuid;
+var_newspapereditionid uuid;
+var_color character varying;
+var_childinfoelement childinfo;
+var_uuid_runawayid uuid;
+var_uuid_runawaychildid uuid;
+var_uuid_runawayadid uuid;
+
+var_uuid_ownerid uuid;
+var_uuid_statecaughtid uuid;
+var_uuid_statesoldid uuid;
+var_uuid_countysoldid uuid;
+var_uuid_citysoldid uuid;
+
+BEGIN
+	--Get state info
+	SELECT StateID into var_stateid from STATES where NAME = in_statename;
+	-- insert into county table
+	IF (NOT EXISTS (SELECT countyid from COUNTIES where NAME = in_countyname)) THEN
+		INSERT into COUNTIES values (uuid_generate_v4(),var_stateID,in_countyname,null, null,null);
+	END IF;
+	-- insert into city table
+	IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_cityname) THEN
+	
+		INSERT into cities values (uuid_generate_v4(),in_cityname,var_statedID,null, null);
+	END IF;
+	SELECT CountyID into var_countyid from COUNTIES where NAME = in_countyname;
+	SELECT CityID into var_cityid from CITIES where NAME = in_cityname;
+	--insert into newspapers table
+	IF (NOT EXISTS (SELECT newspaperid from Newspapers where NAME = in_newspapername)) THEN
+		INSERT into newspapers values (uuid_generate_v4(),var_cityid,var_countyid,var_stateid,in_newspapername);
+	END IF;	
+	-- insert into owners table
+	var_uuid_ownerid=uuid_generate_v4();
+	insert into owners values (var_uuid_ownerid,in_fname, in_lname, var_stateid, var_countyid, in_ownerprevfname, in_ownerprevlname );
+
+	--insert into newspapereditions table
+	SELECT NewspaperID into var_newspaperid from Newspapers where name = in_newspapername;
+	var_newspapereditionid=uuid_generate_v4();
+	insert into newspapereditions values(var_newspapereditionid,var_newspaperid,in_newspaperdistdate,null,in_sourceurl,null);
+
+	--insert into Runawayads table
+	var_uuid_runawayadid= uuid_generate_v4();
+	insert into RunawayAds values(var_uuid_runawayadid,null,var_newspapereditionid,in_runawayadsnotes, null,in_pagenumber, in_isjailor);
+
+	--insert into colors table
+	IF (NOT EXISTS (SELECT colorid from Colors where colorname = in_color)) THEN
+		INSERT into Colors values (uuid_generate_v4(),in_color);
+	END IF;		
+	SELECT colorname into var_color from Colors where colorname=in_color;
+
+	--insert into runaways table
+	var_uuid_runawayid= uuid_generate_v4();
+	insert into Runaways values(var_uuid_runawayid,in_slavename,in_gender,in_age,in_height,in_weight,in_builddesc,in_marksphyattributes,in_notes,var_color);
+
+	--insert into RunawayChildren and Slaves_To_Children table
+	FOR i in array_lower(in_childinfo,1)..array_upper(in_childinfo,1)
+	LOOP
+		var_uuid_runawaychildid=uuid_generate_v4();
+		INSERT into RunawayChildren values(var_uuid_runawaychildid,in_childinfo[i].childage, in_childinfo[i].childgender, in_childinfo[i].childname);
+		INSERT INTO Slaves_To_Children values(uuid_generate_v4(),var_uuid_runawayid, var_uuid_runawaychildid);
+	END LOOP;
+
+	-- insert into Ads_To_Runaways table
+	INSERT INTO Ads_To_Runaways values(uuid_generate_v4(),var_uuid_runawayadid,var_uuid_runawayid);
+
+	--insert
+	select StateID into var_uuid_statecaughtid from STATES where name= in_statecaught;
+	select StateID into var_uuid_statesoldid from STATES where name= in_statesold;
+	
+	-- insert into county table
+	IF (NOT EXISTS (SELECT countyid from COUNTIES where NAME = in_countysold)) THEN
+		INSERT into COUNTIES values (uuid_generate_v4(),var_uuid_statesoldid,in_countysold,null, null,null);
+	END IF;
+	-- insert into city table
+	IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_citysold) THEN
+	
+		INSERT into cities values (uuid_generate_v4(),in_citysold,var_uuid_statesoldid,null, null);
+	END IF;
+	SELECT CountyID into var_uuid_countysoldid from COUNTIES where NAME = in_countysold;
+	SELECT CityID into var_uuid_citysoldid from CITIES where NAME = in_citysold;
+	
+
+	
+	INSERT INTO RunawayEvents values(uuid_generate_v4(),var_uuid_ownerid,var_uuid_statecaughtid,var_uuid_statesoldid,var_uuid_countysoldid,
+	var_uuid_citysoldid,in_dateentered,in_slavewearingdesc,in_slavelanguagespoken,in_wasslaverecentlysold,in_headeddesc,in_washeadedhome,
+	in_ranalone,in_ranwithnumber,in_motherandchildren,in_ranmidforcedmigration,in_runawayeventnotes,in_slavemarksscarmutilation,
+	in_isageapproximate,in_wascaught,in_reward,var_uuid_runawayid,var_uuid_runawayadid);
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+
+
+SAMPLE QUERY TO INVOKE STORED PROCEDURE
+
+select INSERT_INTO_FOTM ('California','Los Angeles','Los Angeles','California Times','Bob','johnson','john','mary','10/10/1883','http:\\www.google.com',
+  'Fled from LA',3,TRUE,'Mike','m','23','5','63','thin','scar in right hand','very tall','black',(ARRAY['(james,12,m)','(sara,13,f)'])::childinfo[],
+  'NewYork','NewYork','Tompkins','Ithaca','California','Los Angeles','Los Angeles','12/12/1912','Long shirt','Spanish',FALSE,'headed to newyork',
+  TRUE,FALSE,4,TRUE,FALSE,'escaped from enslaver','scar in right cheek',TRUE,TRUE,1000);
+
+  
+
