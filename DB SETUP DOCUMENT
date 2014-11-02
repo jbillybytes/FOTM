@@ -6,6 +6,7 @@ DATABASE SETUP
 4) Create the INSERT_INTO_FOTM stored procedure.
 
 TABLES TO BE CREATED
+CREATE EXTENSION "uuid-ossp";
 STATES TABLE:
 CREATE TABLE States (
     StateID uuid NOT NULL,
