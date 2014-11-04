@@ -1,0 +1,242 @@
+@import url(http://fonts.googleapis.com/css?family=Allura);
+@import url(http://fonts.googleapis.com/css?family=Cardo:400,700,400italic);
+
+body {
+	font-family: Cardo, serif;
+	background-image: url("../img/freedom-bg-50.png");
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: 0% 100%;
+}
+
+@media (max-width: 1199px) {
+	body {
+		background: none;
+	}
+}
+
+/*@media (min-width: 768px) {
+	.container {
+		width: 90%;
+		min-width: 750px;
+	}
+}
+@media (min-width: 992px) {
+	.container {
+		width: 85%;
+	}
+}
+@media (min-width: 1200px) {
+	.container {
+		width: 80%;
+	}
+}*/
+
+.cornell-header {
+	font-family: verdana, sans-serif;
+	color: #222;
+	height: 45px;
+	background-color: #4d4e53;
+}
+
+.cornell-search {
+	text-align: right;
+	margin-top: 10px;
+}
+
+.cornell-search a {
+	color: white;
+    text-decoration: none;
+    font-size: 0.6875em;
+    padding: 5px 15px;
+}
+
+.cornell-search a:hover {
+    background: #990f26;
+}
+
+.navbar {
+	border: 0px;
+	border-radius: 0px;
+}
+
+.navbar-default {
+	background-color: #210d29;
+}
+
+.navbar-default .navbar-toggle {
+	background-color: #3a114a;
+	margin-top: 10px;
+	border-color: transparent;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: white;
+}
+
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+	background-color: #3a114a;
+}
+
+.navbar-default .navbar-brand {
+	color: #e6b91c;
+    font-family: "Allura", serif;
+    text-shadow: 0 0 0;
+    font-size: 2.5em;
+    padding-top: 20px;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+	.navbar-default .navbar-brand {
+	    font-size: 2em;
+	}
+}
+
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus{
+	text-decoration: none;
+	color: #e6b91c;
+}
+
+.navbar-default .navbar-nav {
+	margin-top: 15px;
+	margin-bottom: 5px;
+}
+
+.navbar-default .navbar-nav li a {
+	color: #c4bbc8;
+	padding: 5px 15px;
+	font-size: 1.2em;
+}
+
+.navbar-default .navbar-nav li a:hover {
+	color: white;
+}
+
+@media (min-width: 768px) {
+	.navbar-default .navbar-collapse {
+		float: right !important;
+		padding-right: 0px;
+	}
+}
+.navbar-default .navbar-collapse {
+		margin-right: 0px;
+		padding-right: 
+	}
+.panel-primary {
+	border-color: #e8e1d6;
+}
+
+@media (min-width: 1200px) {
+	body {
+		padding-top: 110px;
+	}
+	.cornell-header {
+		position: fixed;
+		width: 100%;
+		top: 0;
+		z-index: 100;
+	}
+	.navbar-default {
+		position: fixed;
+		width: 100%;
+		top: 45px;
+		z-index: 100;
+	}
+	.fixed {
+		position: fixed;
+		width: 550px;
+/*		width: 38%;
+*/	}
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+	body {
+		padding-top: 110px;
+	}
+	.cornell-header {
+		position: fixed;
+		width: 100%;
+		top: 0;
+		z-index: 100;
+	}
+	.navbar-default {
+		position: fixed;
+		width: 100%;
+		top: 45px;
+		z-index: 100;
+	}
+	.fixed {
+		position: fixed;
+		width: 450px;
+/*		width: 40%;
+*/	}
+}
+
+.panel-primary .panel-heading {
+	background-color: #e8e1d6;
+	border-color: #e8e1d6;
+	color: #210d29;
+}
+
+.form-group {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.form-group .radio {
+	padding-left: 20px;
+}
+
+.form-horizontal .control-label {
+	text-align: left;
+}
+
+.prev-next {
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+.btn-info {
+	color: #fff;
+	background-color: #4a0a79;
+	border-color: #e8e1d6;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active {
+	color: #fff;
+	background-color: #3b0861;
+	border-color: #e8e1d6;
+}
+
+.btn-default {
+	color: #000;
+	background-color: #e8e1d6;
+	border-color: #210d29;
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active {
+	color: #fff;
+	background-color: #210d29;
+	border-color: #e8e1d6;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+	.panel-body {
+		height: 155px;
+	}
+}
+
+.panel-body img {
+	width: 100%;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
