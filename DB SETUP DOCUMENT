@@ -1,13 +1,13 @@
 
-DATABASE SETUP 
-1) Install Postgres SQL version-  Postgres Version 9.3.5 from http://www.enterprisedb.com/products-services-training/pgdownload
-2) Create a database  called FOTM.
-3) Create the below tables in the FOTM database.
-4) Create the INSERT_INTO_FOTM stored procedure.
+--DATABASE SETUP 
+--1) Install Postgres SQL version-  Postgres Version 9.3.5 from http://www.enterprisedb.com/products-services-training/pgdownload
+--2) Create a database  called FOTM.
+--3) Create the below tables in the FOTM database.
+--4) Create the INSERT_INTO_FOTM stored procedure.
 
-TABLES TO BE CREATED
+--TABLES TO BE CREATED
 CREATE EXTENSION "uuid-ossp";
-STATES TABLE:
+--STATES TABLE:
 CREATE TABLE States (
     StateID uuid NOT NULL,
     Abbrev character varying(2) NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE States (
 ALTER TABLE ONLY States
     ADD CONSTRAINT PK_StateID PRIMARY KEY (StateID);
 
-COUNTIES TABLE
+--COUNTIES TABLE
 CREATE TABLE Counties (
     CountyID uuid NOT NULL,
     StateID uuid NOT NULL,
@@ -37,7 +37,7 @@ ALTER TABLE ONLY Counties
 ALTER TABLE ONLY Counties
     ADD CONSTRAINT FK_StateID FOREIGN KEY (StateID) REFERENCES States(StateID);
 
-OWNERS TABLE
+--OWNERS TABLE
 CREATE TABLE Owners (
     OwnerID uuid NOT NULL,
     F_Name character varying,
@@ -57,7 +57,7 @@ ALTER TABLE ONLY Owners
 ALTER TABLE ONLY Owners
     ADD CONSTRAINT FK_StateID FOREIGN KEY (StateID) REFERENCES States(StateID)
 
-CITIES TABLE
+--CITIES TABLE
 CREATE TABLE Cities (
     CityID uuid NOT NULL,
     Name character varying(50),
@@ -72,7 +72,7 @@ ALTER TABLE ONLY Cities
 
  ALTER TABLE ONLY Cities
     ADD CONSTRAINT FK_StateID FOREIGN KEY (StateID) REFERENCES States(StateID);
-NEWSPAPERS TABLE
+--NEWSPAPERS TABLE
 
 CREATE TABLE Newspapers (
     NewspaperID uuid NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE Newspapers (
 ALTER TABLE ONLY Newspapers
     ADD CONSTRAINT PK_NewspaperID PRIMARY KEY (NewspaperID);
 
-NEWSPAPEREDITIONS TABLE
+--NEWSPAPEREDITIONS TABLE
 
 CREATE TABLE NewspaperEditions (
     NewspaperEditionID uuid NOT NULL,
@@ -103,7 +103,7 @@ ALTER TABLE ONLY NewspaperEditions
     ADD CONSTRAINT FK_NewspaperID FOREIGN KEY (NewspaperID) REFERENCES Newspapers(NewspaperID);
 
 
-COLORS TABLE
+--COLORS TABLE
 CREATE TABLE Colors (
     ColorID uuid NOT NULL,
     ColorName character varying
@@ -112,7 +112,7 @@ CREATE TABLE Colors (
 ALTER TABLE ONLY Colors
     ADD CONSTRAINT PK_ColorID PRIMARY KEY (ColorID);
 
-RUNAWAYS TABLE
+--RUNAWAYS TABLE
 CREATE TABLE Runaways (
     RunawayID uuid NOT NULL,
     SlaveName character varying,
@@ -133,7 +133,7 @@ ALTER TABLE ONLY Runaways
 ALTER TABLE ONLY Runaways
     ADD CONSTRAINT FK_Color FOREIGN KEY (ColorID) REFERENCES Colors(ColorID);
 
-RUNAWAYCHILDREN TABLE
+--RUNAWAYCHILDREN TABLE
 CREATE TABLE RunawayChildren (
     RunawayChildID uuid NOT NULL,
     Age double precision,
@@ -144,7 +144,7 @@ CREATE TABLE RunawayChildren (
 ALTER TABLE ONLY RunawayChildren
     ADD CONSTRAINT PK_RunawayChildID PRIMARY KEY (RunawayChildID);
 
-RUNAWAYADS TABLE
+--RUNAWAYADS TABLE
 
 CREATE TABLE RunawayAds (
     Runaway_AD_ID uuid NOT NULL,
@@ -164,7 +164,7 @@ ALTER TABLE ONLY RunawayAds
     ADD CONSTRAINT FK_NewspaperEditionID FOREIGN KEY (NewspaperEditionID) REFERENCES NewspaperEditions(NewspaperEditionID);
 
 
-ADS_TO_RUNAWAYS TABLE
+--ADS_TO_RUNAWAYS TABLE
 CREATE TABLE Ads_To_Runaways (
     Ads_To_RunawaysID uuid NOT NULL,
     RunawayAdID uuid NOT NULL,
@@ -180,7 +180,7 @@ ALTER TABLE ONLY Ads_To_Runaways
 ALTER TABLE ONLY Ads_To_Runaways
     ADD CONSTRAINT FK_RunawayID FOREIGN KEY (RunawayID) REFERENCES Runaways(RunawayID);
 
-SLAVES_TO_CHILDREN TABLE
+--SLAVES_TO_CHILDREN TABLE
 CREATE TABLE Slaves_To_Children (
     Slaves_To_ChildrenID uuid NOT NULL,
     RunawayID uuid NOT NULL,
@@ -196,7 +196,7 @@ CREATE TABLE Slaves_To_Children (
     ALTER TABLE ONLY Slaves_To_Children
     ADD CONSTRAINT FK_RunawayID FOREIGN KEY (RunawayID) REFERENCES Runaways(RunawayID);
 
-RUNAWAYEVENTS TABLE
+--RUNAWAYEVENTS TABLE
 CREATE TABLE RunawayEvents (
     RunawayEventID uuid NOT NULL,
     OwnerID uuid,
@@ -247,7 +247,7 @@ ALTER TABLE ONLY RunawayEvents
 ALTER TABLE ONLY RunawayEvents
     ADD CONSTRAINT fk_statecaughtid FOREIGN KEY (StateCaughtID) REFERENCES States(StateID);
 
-STORED PROCEDURE
+--STORED PROCEDURE
 
 create type childinfo as
 (
@@ -299,7 +299,7 @@ BEGIN
 	-- insert into city table
 	IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_cityname) THEN
 	
-		INSERT into cities values (uuid_generate_v4(),in_cityname,var_statedID,null, null);
+		INSERT into cities values (uuid_generate_v4(),in_cityname,var_stateID,null, null);
 	END IF;
 	SELECT CountyID into var_countyid from COUNTIES where NAME = in_countyname;
 	SELECT CityID into var_cityid from CITIES where NAME = in_cityname;
@@ -369,12 +369,12 @@ $BODY$
   COST 100;
 
 
-SAMPLE QUERY TO INVOKE STORED PROCEDURE
+--SAMPLE QUERY TO INVOKE STORED PROCEDURE
 
-select INSERT_INTO_FOTM ('California','Los Angeles','Los Angeles','California Times','Bob','johnson','john','mary','10/10/1883','http:\\www.google.com',
-  'Fled from LA',3,TRUE,'Mike','m','23','5','63','thin','scar in right hand','very tall','black',(ARRAY['(james,12,m)','(sara,13,f)'])::childinfo[],
-  'NewYork','NewYork','Tompkins','Ithaca','California','Los Angeles','Los Angeles','12/12/1912','Long shirt','Spanish',FALSE,'headed to newyork',
-  TRUE,FALSE,4,TRUE,FALSE,'escaped from enslaver','scar in right cheek',TRUE,TRUE,1000);
+-- select INSERT_INTO_FOTM ('California','Los Angeles','Los Angeles','California Times','Bob','johnson','john','mary','10/10/1883','http:\\www.google.com',
+-- 'Fled from LA',3,TRUE,'Mike','m','23','5','63','thin','scar in right hand','very tall','black',(ARRAY['(james,12,m)','(sara,13,f)'])::childinfo[],
+-- 'New York','New York','Tompkins','Ithaca','California','Los Angeles','Los Angeles','12/12/1912','Long shirt','Spanish',FALSE,'headed to new york',
+-- TRUE,FALSE,4,TRUE,FALSE,'escaped from enslaver','scar in right cheek',TRUE,TRUE,1000);
 
   
 
