@@ -1,0 +1,752 @@
+
+DATABASE SETUP 
+
+1) Install Postgres SQL version-  Postgres Version 9.3.5 from http://www.enterprisedb.com/products-services-training/pgdownload
+2) Create a database  called FOTM.
+3) Create the below tables, stored procedures and triggers in the FOTM database.
+
+UUID
+CREATE EXTENSION "uuid-ossp";
+STATES TABLE:
+-- Table: states
+
+CREATE TABLE states
+(
+  stateid uuid NOT NULL,
+  abbrev character varying(2) NOT NULL,
+  name character varying(50),
+  refid character varying,
+  polycoords polygon,
+  authority character varying,
+  CONSTRAINT pk_stateid PRIMARY KEY (stateid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE states
+  OWNER TO postgres;
+
+ALTER TABLE ONLY States
+    ADD CONSTRAINT PK_StateID PRIMARY KEY (StateID);
+
+COUNTIES TABLE
+CREATE TABLE counties
+(
+  countyid uuid NOT NULL,
+  stateid uuid NOT NULL,
+  name character varying(50) NOT NULL,
+  polycoords polygon,
+  refid character varying,
+  authority character varying,
+  CONSTRAINT pk_countyid PRIMARY KEY (countyid),
+  CONSTRAINT fk_stateid FOREIGN KEY (stateid)
+      REFERENCES states (stateid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE counties
+  OWNER TO postgres;
+
+OWNERS TABLE
+-- Table: owners
+
+CREATE TABLE owners
+(
+  ownerid uuid NOT NULL,
+  f_name character varying,
+  l_name character varying,
+  stateid uuid,
+  countyid uuid,
+  ownerprevfname character varying(50),
+  ownerprevlname character varying(100),
+  cityid uuid,
+  CONSTRAINT pk_ownerid PRIMARY KEY (ownerid),
+  CONSTRAINT cityid FOREIGN KEY (cityid)
+      REFERENCES cities (cityid) MATCH FULL
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT countyid FOREIGN KEY (countyid)
+      REFERENCES counties (countyid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_stateid FOREIGN KEY (stateid)
+      REFERENCES states (stateid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE owners
+  OWNER TO postgres;
+CITIES TABLE
+-- Table: cities
+
+CREATE TABLE cities
+(
+  cityid uuid NOT NULL,
+  name character varying(50),
+  stateid uuid NOT NULL,
+  refid character varying,
+  polycoords polygon,
+  authority character varying,
+  CONSTRAINT pk_cityid PRIMARY KEY (cityid),
+  CONSTRAINT fk_stateid FOREIGN KEY (stateid)
+      REFERENCES states (stateid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE cities
+  OWNER TO postgres;
+NEWSPAPERS TABLE
+
+CREATE TABLE newspapers
+(
+  newspaperid uuid NOT NULL,
+  cityid uuid NOT NULL,
+  countyid uuid,
+  stateid uuid NOT NULL,
+  name character varying,
+  CONSTRAINT pk_newspaperid PRIMARY KEY (newspaperid),
+  CONSTRAINT fk_cityid FOREIGN KEY (cityid)
+      REFERENCES cities (cityid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_countyid FOREIGN KEY (countyid)
+      REFERENCES counties (countyid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_stateid FOREIGN KEY (stateid)
+      REFERENCES states (stateid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+NEWSPAPEREDITIONS TABLE
+CREATE TABLE newspapereditions
+(
+  newspapereditionid uuid NOT NULL,
+  newspaperid uuid NOT NULL,
+  distributiondate date,
+  uniqueissueid character varying,
+  sourceurl character varying,
+  analogue character varying,
+  CONSTRAINT pk_newspapereditionid PRIMARY KEY (newspapereditionid),
+  CONSTRAINT fk_newspaperid FOREIGN KEY (newspaperid)
+      REFERENCES newspapers (newspaperid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+CHILD TYPE
+create type childinfo as
+(
+  childname character varying,
+  childage float,
+  childgender char
+);
+COLORS TABLE
+CREATE TABLE colors
+(
+  colorid uuid NOT NULL,
+  colorname character varying,
+  CONSTRAINT pk_colorid PRIMARY KEY (colorid)
+)
+WITH (
+  OIDS=FALSE
+);
+RUNAWAYS TABLE
+CREATE TABLE runaways
+(
+  runawayid uuid NOT NULL,
+  slavename character varying,
+  slavegender character(1),
+  slaveage double precision,
+  slaveheightinches double precision,
+  slaveweightpounds double precision,
+  slavebuilddesc character varying,
+  slavemarksphysicalattributes character varying,
+  notes character varying,
+  date_transcription character varying,
+  colorid uuid,
+  CONSTRAINT pk_runawayid PRIMARY KEY (runawayid),
+  CONSTRAINT fk_color FOREIGN KEY (colorid)
+      REFERENCES colors (colorid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+RUNAWAYCHILDREN TABLE
+CREATE TABLE runawaychildren
+(
+  runawaychildid uuid NOT NULL,
+  age double precision,
+  gender character(1),
+  name character varying,
+  CONSTRAINT pk_runawaychildid PRIMARY KEY (runawaychildid)
+)
+WITH (
+  OIDS=FALSE
+);
+RUNAWAYADS TABLE
+CREATE TABLE runawayads
+(
+  runaway_ad_id uuid NOT NULL,
+  recordnumber integer,
+  newspapereditionid uuid NOT NULL,
+  notes character varying,
+  originalimage bytea,
+  pagenumber integer,
+  isjailor boolean,
+  CONSTRAINT pk_runaway_ad_id PRIMARY KEY (runaway_ad_id),
+  CONSTRAINT fk_newspapereditionid FOREIGN KEY (newspapereditionid)
+      REFERENCES newspapereditions (newspapereditionid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+ADS_TO_RUNAWAYS TABLE
+CREATE TABLE ads_to_runaways
+(
+  ads_to_runawaysid uuid NOT NULL,
+  runawayadid uuid NOT NULL,
+  runawayid uuid NOT NULL,
+  adid uuid NOT NULL,
+  CONSTRAINT pk_ads_to_runawaysid PRIMARY KEY (ads_to_runawaysid),
+  CONSTRAINT fk_adid FOREIGN KEY (adid)
+      REFERENCES ads (adid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_runawayadid FOREIGN KEY (runawayadid)
+      REFERENCES runawayads (runaway_ad_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_runawayid FOREIGN KEY (runawayid)
+      REFERENCES runaways (runawayid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+SLAVES_TO_CHILDREN TABLE
+CREATE TABLE slaves_to_children
+(
+  slaves_to_childrenid uuid NOT NULL,
+  runawayid uuid NOT NULL,
+  runawaychildid uuid NOT NULL,
+  CONSTRAINT pk_slaves_to_childrenid PRIMARY KEY (slaves_to_childrenid),
+  CONSTRAINT fk_runawaychildid FOREIGN KEY (runawaychildid)
+      REFERENCES runawaychildren (runawaychildid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT fk_runawayid FOREIGN KEY (runawayid)
+      REFERENCES runaways (runawayid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+RUNAWAYEVENTS TABLE
+CREATE TABLE runawayevents
+(
+  runawayeventid uuid NOT NULL,
+  ownerid uuid,
+  statecaughtid uuid,
+  soldfromstateid uuid,
+  soldfromcountyid uuid,
+  soldfromcityid uuid,
+  dateentered date,
+  slavewearingdesc character varying(500),
+  slavelanguagespoken character varying(100),
+  wasslaverecentlysold boolean,
+  headeddesc character varying(200),
+  washeadedhome boolean,
+  ranalone boolean,
+  ranwithnumber integer,
+  motherandchildren boolean,
+  ran_mid_forcedmigration boolean,
+  notes character varying(1000),
+  slavemarksscarsmutilations character varying(500),
+  isageapproximate boolean,
+  wascaught boolean,
+  reward double precision,
+  runawayid uuid,
+  runaway_ad_id uuid,
+  CONSTRAINT pk_runawayeventid PRIMARY KEY (runawayeventid),
+  CONSTRAINT fk_ownerid FOREIGN KEY (ownerid)
+      REFERENCES owners (ownerid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_runaway_ad_id FOREIGN KEY (runaway_ad_id)
+      REFERENCES runawayads (runaway_ad_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_runawayid FOREIGN KEY (runawayid)
+      REFERENCES runaways (runawayid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_soldfromcityid FOREIGN KEY (soldfromcityid)
+      REFERENCES cities (cityid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_soldfromcountyid FOREIGN KEY (soldfromcountyid)
+      REFERENCES counties (countyid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_soldfromstateid FOREIGN KEY (soldfromstateid)
+      REFERENCES states (stateid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_statecaughtid FOREIGN KEY (statecaughtid)
+      REFERENCES states (stateid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+CROWDSOURCING LOGS TABLE
+CREATE TABLE logs_table
+(
+  log_id uuid NOT NULL,
+  adid character varying,
+  newspaper_statename character varying,
+  newspaper_countyname character varying,
+  newspaper_cityname character varying,
+  newspapername character varying,
+  owner_fname character varying,
+  owner_lname character varying,
+  ownerprevfname character varying,
+  ownerprevlname character varying,
+  newspaperdistdate date,
+  sourceurl character varying,
+  runawayadsnotes character varying,
+  pagenumber integer,
+  isjailor boolean,
+  slavename character varying,
+  slave_gender character(1),
+  slave_age double precision,
+  slave_height double precision,
+  slave_weight double precision,
+  slave_builddesc character varying,
+  slave_marksphyattributes character varying,
+  slave_notes character varying,
+  slave_color character varying,
+  slave_childinfo childinfo[],
+  slave_statecaught character varying,
+  slave_statesold character varying,
+  slave_countysold character varying,
+  slave_citysold character varying,
+  dateentered date,
+  slavewearingdesc character varying,
+  slavelanguagespoken character varying,
+  wasslaverecentlysold boolean,
+  headeddesc character varying,
+  washeadedhome boolean,
+  ranalone boolean,
+  ranwithnumber integer,
+  motherandchildren boolean,
+  ranmidforcedmigration boolean,
+  runawayeventnotes character varying,
+  slavemarksscarmutilation character varying,
+  isageapproximate boolean,
+  wascaught boolean,
+  reward double precision,
+  ownerstatename character varying,
+  ownercityname character varying,
+  ownercountyname character varying,
+  ad_completion integer,
+  time_changed timestamp without time zone,
+  CONSTRAINT logs_table_pkey PRIMARY KEY (log_id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE logs_table
+  OWNER TO postgres;
+OCR LOG TABLE
+-- Table: ocrlogs_table
+
+-- DROP TABLE ocrlogs_table;
+
+CREATE TABLE ocrlogs_table
+(
+  logid uuid NOT NULL,
+  adid uuid,
+  filename character varying,
+  filepath character varying,
+  filetype character varying,
+  ocr_text text,
+  tags text,
+  ad_completion integer,
+  inserted_time timestamp without time zone,
+  CONSTRAINT ocrlogs_table_pkey PRIMARY KEY (logid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE ocrlogs_table
+  OWNER TO postgres;
+STORED PROCEDURE- for getting child info
+
+CREATE OR REPLACE FUNCTION get_child_info(IN in_ad_id character varying)
+  RETURNS TABLE(childname character varying, childage double precision, childgender character) AS
+$BODY$
+declare
+var_runawayid uuid;
+BEGIN
+select runawayid into var_runawayid from ads_to_runaways where adid=cast(in_ad_id as uuid);
+--use this to get the details of the child and pass to 
+return query
+select name as childname,age as childage, gender as childgender from runawaychildren
+where runawaychildid in (select runawaychildid from slaves_to_children where runawayid=var_runawayid);
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION get_child_info(character varying)
+  OWNER TO postgres;
+
+SP- Retrieve Crowdsourcing Info
+CREATE OR REPLACE FUNCTION get_crowdsourcing_info_for_ads(IN in_adid character varying)
+  RETURNS TABLE(runawayads_notes character varying, pagenumber integer, isjailor boolean, filename character varying, slavename character varying, slavegender character, slaveage double precision, slaveheightinches double precision, slaveweightpounds double precision, slavebuilddesc character varying, slavemarksphysicalattributes character varying, runaways_notes character varying, dateentered date, slavewearingdesc character varying, slavelanguagespoken character varying, wasslaverecentlysold boolean, headeddesc character varying, washeadedhome boolean, ranalone boolean, ranwithnumber integer, motherandchildren boolean, ran_mid_forcedmigration boolean, runawayevents_notes character varying, slavemarksscarsmutilations character varying, isageapproximate boolean, wascaught boolean, reward double precision, f_name character varying, l_name character varying, ownerprevfname character varying, ownerprevlname character varying, distributiondate date, sourceurl character varying, slavecolor character varying, newspapers_name character varying, newspaper_state_name character varying, newspaper_county_name character varying, newspaper_city_name character varying, owner_statename character varying, owner_countyname character varying, owner_cityname character varying, stateslavecaught character varying, soldfromstate character varying, soldfromcounty character varying, soldfromcity character varying) AS
+$BODY$
+BEGIN
+RETURN QUERY
+
+select runawayads.notes as runawayads_notes,runawayads.pagenumber,runawayads.isjailor,ads.filename,
+runaways.slavename,runaways.slavegender,runaways.slaveage,runaways.slaveheightinches,
+runaways.slaveweightpounds,runaways.slavebuilddesc,runaways.slavemarksphysicalattributes,
+runaways.notes as runaways_notes,runawayevents.dateentered,runawayevents.slavewearingdesc,runawayevents.slavelanguagespoken,
+runawayevents.wasslaverecentlysold,runawayevents.headeddesc,runawayevents.washeadedhome,runawayevents.ranalone,
+runawayevents.ranwithnumber,runawayevents.motherandchildren,runawayevents.ran_mid_forcedmigration,runawayevents.notes as runawayevents_notes,
+runawayevents.slavemarksscarsmutilations,runawayevents.isageapproximate,runawayevents.wascaught,
+runawayevents.reward,
+owners.f_name,owners.l_name,owners.ownerprevfname,owners.ownerprevlname,
+newspapereditions.distributiondate,newspapereditions.sourceurl,
+colors.colorname as slavecolor,
+newspapers.name,states.name as newspaper_state_name,counties.name as newspaper_county_name,cities.name as newspaper_city_name,
+ownerstates.name as owner_statename, ownercounties.name as owner_countyname, ownercities.name as owner_cityname,
+
+statecaughtstates.name as stateslavecaught,soldfromstates.name as soldfromstate, soldfromcounties.name as soldfromcounty,soldfromcities.name as soldfromcity
+
+from
+ads, runawayads, ads_to_runaways , runaways,  runawayevents, owners,newspapereditions,newspapers,states  ,counties ,cities ,colors,
+states ownerstates, counties ownercounties, cities ownercities, states statecaughtstates,states soldfromstates,counties soldfromcounties, cities soldfromcities
+where
+ads.adid=cast(in_adid as uuid) and
+ads.adid=ads_to_runaways.adid and
+runawayads.runaway_ad_id=ads_to_runaways.runawayadid and
+runaways.runawayid=ads_to_runaways.runawayid and
+
+runawayevents.runawayid=runaways.runawayid and
+runawayevents.runawayid=ads_to_runaways.runawayid and
+runawayevents.runaway_ad_id=runawayads.runaway_ad_id and
+runawayevents.runaway_ad_id=ads_to_runaways.runawayadid and
+runawayevents.runaway_ad_id=runawayads.runaway_ad_id and
+
+owners.ownerid=runawayevents.ownerid and
+newspapereditions.newspapereditionid=runawayads.newspapereditionid and
+runaways.colorid=colors.colorid and
+newspapers.newspaperid=newspapereditions.newspaperid and
+newspapers.cityid=cities.cityid and newspapers.countyid=counties.countyid and newspapers.stateid=states.stateid and
+
+owners.stateid= ownerstates.stateid and
+owners.countyid=ownercounties.countyid and
+owners.cityid=ownercities.cityid and
+
+runawayevents.statecaughtid=statecaughtstates.stateid and runawayevents.soldfromstateid=soldfromstates.stateid and
+runawayevents.soldfromcountyid=soldfromcounties.countyid and runawayevents.soldfromcityid= soldfromcities.cityid;
+
+
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION get_crowdsourcing_info_for_ads(character varying)
+  OWNER TO postgres;
+SP- Insert into FOTM
+-- Function: insert_into_fotm(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, date, character varying, character varying, integer, boolean, character varying, character, double precision, double precision, double precision, character varying, character varying, character varying, character varying, childinfo[], character varying, character varying, character varying, character varying, date, character varying, character varying, boolean, character varying, boolean, boolean, integer, boolean, boolean, character varying, character varying, boolean, boolean, double precision, character varying, character varying, character varying, integer)
+
+-- DROP FUNCTION insert_into_fotm(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, date, character varying, character varying, integer, boolean, character varying, character, double precision, double precision, double precision, character varying, character varying, character varying, character varying, childinfo[], character varying, character varying, character varying, character varying, date, character varying, character varying, boolean, character varying, boolean, boolean, integer, boolean, boolean, character varying, character varying, boolean, boolean, double precision, character varying, character varying, character varying, integer);
+
+CREATE OR REPLACE FUNCTION insert_into_fotm(in_adid character varying, in_statename character varying, in_countyname character varying, in_cityname character varying, in_newspapername character varying, in_fname character varying, in_lname character varying, in_ownerprevfname character varying, in_ownerprevlname character varying, in_newspaperdistdate date, in_sourceurl character varying, in_runawayadsnotes character varying, in_pagenumber integer, in_isjailor boolean, in_slavename character varying, in_gender character, in_age double precision, in_height double precision, in_weight double precision, in_builddesc character varying, in_marksphyattributes character varying, in_notes character varying, in_color character varying, in_childinfo childinfo[], in_statecaught character varying, in_statesold character varying, in_countysold character varying, in_citysold character varying, in_dateentered date, in_slavewearingdesc character varying, in_slavelanguagespoken character varying, in_wasslaverecentlysold boolean, in_headeddesc character varying, in_washeadedhome boolean, in_ranalone boolean, in_ranwithnumber integer, in_motherandchildren boolean, in_ranmidforcedmigration boolean, in_runawayeventnotes character varying, in_slavemarksscarmutilation character varying, in_isageapproximate boolean, in_wascaught boolean, in_reward double precision, in_ownerstatename character varying, in_ownercityname character varying, in_ownercountyname character varying, in_ad_completion integer)
+  RETURNS void AS
+$BODY$
+DECLARE
+var_stateid uuid;
+var_countyid uuid;
+var_cityid uuid;
+var_newspaperid uuid;
+var_newspapereditionid uuid;
+var_colorid uuid;
+var_query character varying;
+var_childinfoelement childinfo;
+var_uuid_runawayid uuid;
+var_uuid_runawaychildid uuid;
+var_uuid_runawayadid uuid;
+var_cur_time timestamp;
+var_uuid_ownerid uuid;
+var_ownerstateid uuid;
+var_ownercityid uuid;
+var_ownercountyid uuid;
+var_uuid_statecaughtid uuid;
+var_uuid_statesoldid uuid;
+var_uuid_countysoldid uuid;
+var_uuid_citysoldid uuid;
+var_uuid_runawaysevents uuid;
+var_adid uuid;
+
+BEGIN
+
+if (NOT exists (select * from ads_to_runaways where adid=cast(in_adid as uuid))) then  -- This is a new record and you should do insert
+    --Get state info
+    SELECT StateID into var_stateid from STATES where NAME = in_statename;
+    -- insert into county table
+    IF (NOT EXISTS (SELECT countyid from COUNTIES where NAME = in_countyname)) THEN
+        INSERT into COUNTIES values (uuid_generate_v4(),var_stateID,in_countyname,null, null,null);
+    END IF;
+    -- insert into city table
+    IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_cityname) THEN
+
+        INSERT into cities values (uuid_generate_v4(),in_cityname,var_stateID,null, null);
+    END IF;
+    SELECT CountyID into var_countyid from COUNTIES where NAME = in_countyname;
+    SELECT CityID into var_cityid from CITIES where NAME = in_cityname;
+    --insert into newspapers table
+    IF (NOT EXISTS (SELECT newspaperid from Newspapers where NAME = in_newspapername and stateid=var_stateid and countyid=var_countyid and cityid=var_cityid)) THEN
+        INSERT into newspapers values (uuid_generate_v4(),var_cityid,var_countyid,var_stateid,in_newspapername);
+    END IF;
+
+    -- insert into owners table
+
+    SELECT StateID into var_ownerstateid from STATES where NAME = in_ownerstatename;
+    --insert into county table if owner county does not exist
+    IF (NOT EXISTS (SELECT countyid from COUNTIES where NAME = in_ownercountyname)) THEN
+        INSERT into COUNTIES values (uuid_generate_v4(),var_ownerstateID,in_ownercountyname,null, null,null);
+    END IF;
+    --insert into city table if owner city does not exist
+    IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_ownercityname) THEN
+
+        INSERT into cities values (uuid_generate_v4(),in_ownercityname,var_ownerstateID,null, null);
+    END IF;
+    SELECT CountyID into var_ownercountyid from COUNTIES where NAME = in_ownercountyname;
+    SELECT CityID into var_ownercityid from CITIES where NAME = in_ownercityname;
+    var_uuid_ownerid=uuid_generate_v4();
+
+    insert into owners values (var_uuid_ownerid,in_fname, in_lname, var_ownerstateid, var_ownercountyid, in_ownerprevfname, in_ownerprevlname,var_ownercityid );
+
+    --insert into newspapereditions table
+    SELECT NewspaperID into var_newspaperid from Newspapers where name = in_newspapername and stateid=var_stateid and countyid=var_countyid and cityid=var_cityid ;
+    IF (NOT EXISTS (SELECT newspapereditionid from newspapereditions where newspaperid = var_newspaperid and distributiondate= in_newspaperdistdate)) THEN
+        var_newspapereditionid=uuid_generate_v4();
+        insert into newspapereditions values(var_newspapereditionid,var_newspaperid,in_newspaperdistdate,null,in_sourceurl,null);
+    END IF;
+    SELECT newspapereditionid into var_newspapereditionid from newspapereditions where newspaperid = var_newspaperid and distributiondate= in_newspaperdistdate;
+    --insert into Runawayads table
+    var_uuid_runawayadid= uuid_generate_v4();
+    insert into RunawayAds values(var_uuid_runawayadid,null,var_newspapereditionid,in_runawayadsnotes, null,in_pagenumber, in_isjailor);
+
+    --insert into colors table
+    IF (NOT EXISTS (SELECT colorid from Colors where colorname = in_color)) THEN
+        INSERT into Colors values (uuid_generate_v4(),in_color);
+    END IF;
+    SELECT colorid into var_colorid from Colors where colorname=in_color;
+
+    --insert into runaways table
+    var_uuid_runawayid= uuid_generate_v4();
+    insert into Runaways values(var_uuid_runawayid,in_slavename,in_gender,in_age,in_height,in_weight,in_builddesc,in_marksphyattributes,in_notes,null,var_colorid);
+
+    --insert into RunawayChildren and Slaves_To_Children table
+    FOR i in array_lower(in_childinfo,1)..array_upper(in_childinfo,1)
+    LOOP
+        var_uuid_runawaychildid=uuid_generate_v4();
+        INSERT into RunawayChildren values(var_uuid_runawaychildid,in_childinfo[i].childage, in_childinfo[i].childgender, in_childinfo[i].childname);
+        INSERT INTO Slaves_To_Children values(uuid_generate_v4(),var_uuid_runawayid, var_uuid_runawaychildid);
+    END LOOP;
+
+    -- insert into Ads_To_Runaways table
+    INSERT INTO Ads_To_Runaways values(uuid_generate_v4(),var_uuid_runawayadid,var_uuid_runawayid,cast(in_adid as uuid));
+
+    --insert
+    select StateID into var_uuid_statecaughtid from STATES where name= in_statecaught;
+    select StateID into var_uuid_statesoldid from STATES where name= in_statesold;
+
+    -- insert into county table
+    IF (NOT EXISTS (SELECT countyid from COUNTIES where NAME = in_countysold)) THEN
+        INSERT into COUNTIES values (uuid_generate_v4(),var_uuid_statesoldid,in_countysold,null, null,null);
+    END IF;
+    -- insert into city table
+    IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_citysold) THEN
+
+        INSERT into cities values (uuid_generate_v4(),in_citysold,var_uuid_statesoldid,null, null);
+    END IF;
+    SELECT CountyID into var_uuid_countysoldid from COUNTIES where NAME = in_countysold;
+    SELECT CityID into var_uuid_citysoldid from CITIES where NAME = in_citysold;
+
+
+    var_uuid_runawaysevents=uuid_generate_v4();
+    INSERT INTO RunawayEvents values(var_uuid_runawaysevents,var_uuid_ownerid,var_uuid_statecaughtid,var_uuid_statesoldid,var_uuid_countysoldid,
+ var_uuid_citysoldid,in_dateentered,in_slavewearingdesc,in_slavelanguagespoken,in_wasslaverecentlysold,in_headeddesc,in_washeadedhome,
+ in_ranalone,in_ranwithnumber,in_motherandchildren,in_ranmidforcedmigration,in_runawayeventnotes,in_slavemarksscarmutilation,
+ in_isageapproximate,in_wascaught,in_reward,var_uuid_runawayid,var_uuid_runawayadid);
+
+
+
+    --var_query='INSERT INTO RunawayEvents values(%,var_uuid_ownerid,var_uuid_statecaughtid,var_uuid_statesoldid,var_uuid_countysoldid,
+ --var_uuid_citysoldid,in_dateentered,in_slavewearingdesc,in_slavelanguagespoken,in_wasslaverecentlysold,in_headeddesc,in_washeadedhome,
+ --in_ranalone,in_ranwithnumber,in_motherandchildren,in_ranmidforcedmigration,in_runawayeventnotes,in_slavemarksscarmutilation,
+ --in_isageapproximate,in_wascaught,in_reward,var_uuid_runawayid,var_uuid_runawayadid)';
+    --BEGIN
+    --RAISE EXCEPTION 'INSERT INTO RunawayEvents values(%,var_uuid_ownerid,var_uuid_statecaughtid,var_uuid_statesoldid,var_uuid_countysoldid,
+ --var_uuid_citysoldid,in_dateentered,in_slavewearingdesc,in_slavelanguagespoken,in_wasslaverecentlysold,in_headeddesc,in_washeadedhome,
+ --in_ranalone,in_ranwithnumber,in_motherandchildren,in_ranmidforcedmigration,in_runawayeventnotes,in_slavemarksscarmutilation,
+ --in_isageapproximate,in_wascaught,in_reward,var_uuid_runawayid,var_uuid_runawayadid)', var_uuid_runawaysevents;
+    --END;
+--end;
+else -- this is an update query
+SELECT adid into var_adid from ads_to_runaways where adid=cast(in_adid as uuid);
+--get the runawayadid and runaway id from the ads table
+select runawayadid, runawayid into var_uuid_runawayadid,var_uuid_runawayid from ads_to_runaways where adid=var_adid;
+--update the runaways table. get the color id ., if not der, insert then update the runaways table
+IF (NOT EXISTS (SELECT colorid from Colors where colorname = in_color)) THEN
+INSERT into Colors values (uuid_generate_v4(),in_color);
+END IF;
+SELECT colorid into var_colorid from Colors where colorname=in_color;
+update runaways set (slavename,slavegender,slaveage,slaveheightinches,slaveweightpounds,slavebuilddesc,
+slavemarksphysicalattributes,notes,date_transcription, colorid)=(in_slavename,in_gender,in_age,in_height,in_weight,in_builddesc,in_marksphyattributes,in_notes,null,var_colorid)
+where runawayid=var_uuid_runawayid;
+--get the ownerid from runawayevents table with var_uuid_runawayadid,var_uuid_runawayid.Also get the cities, states and county details. Use that to update the owner details in owners table.
+
+select ownerid into var_uuid_ownerid from runawayevents where runawayid=var_uuid_runawayid and runaway_ad_id=var_uuid_runawayadid;
+SELECT StateID into var_ownerstateid from STATES where NAME = in_ownerstatename;
+--insert into county table if owner county does not exist
+IF (NOT EXISTS (SELECT countyid from COUNTIES where NAME = in_ownercountyname)) THEN
+INSERT into COUNTIES values (uuid_generate_v4(),var_ownerstateID,in_ownercountyname,null, null,null);
+END IF;
+--insert into city table if owner city does not exist
+IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_ownercityname) THEN
+INSERT into cities values (uuid_generate_v4(),in_ownercityname,var_ownerstateID,null, null);
+END IF;
+SELECT CountyID into var_ownercountyid from COUNTIES where NAME = in_ownercountyname;
+SELECT CityID into var_ownercityid from CITIES where NAME = in_ownercityname;
+update owners set(f_name,l_name,stateid,countyid,ownerprevfname,ownerprevlname,cityid) =(in_fname, in_lname, var_ownerstateid, var_ownercountyid, in_ownerprevfname, in_ownerprevlname,var_ownercityid )
+where ownerid=var_uuid_ownerid;
+--3) get the newspaperid and the newspapereditionid from the table
+
+
+SELECT StateID into var_stateid from STATES where NAME = in_statename;
+    -- insert into county table
+IF (NOT EXISTS (SELECT countyid from COUNTIES where NAME = in_countyname)) THEN
+INSERT into COUNTIES values (uuid_generate_v4(),var_stateID,in_countyname,null, null,null);
+END IF;
+    -- insert into city table
+IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_cityname) THEN
+INSERT into cities values (uuid_generate_v4(),in_cityname,var_stateID,null, null);
+END IF;
+SELECT CountyID into var_countyid from COUNTIES where NAME = in_countyname;
+SELECT CityID into var_cityid from CITIES where NAME = in_cityname;
+SELECT NewspaperID into var_newspaperid from Newspapers where name = in_newspapername and stateid=var_stateid and countyid=var_countyid and cityid=var_cityid;
+select newspapereditionid into var_newspapereditionid from newspapereditions where newspaperid = var_newspaperid and distributiondate= in_newspaperdistdate;
+
+update newspapers set(CityID,CountyID,StateID)=(var_cityid,var_countyid,var_stateid) where newspaperid=var_newspaperid;
+
+update newspapereditions set (distributiondate,uniqueissueid,sourceurl,analogue) =(in_newspaperdistdate,null,in_sourceurl,null)
+where newspaperid=var_newspaperid and newspapereditionid=var_newspapereditionid;
+
+--update the runawayads table using the ediion id
+update runawayads set(recordnumber,newspapereditionid,notes,originalimage,pagenumber,isjailor)=(null,var_newspapereditionid,in_runawayadsnotes, null,in_pagenumber, in_isjailor)
+where runaway_ad_id= var_uuid_runawayadid;
+--get the ownerid, statecaughtid, soldfromstateid, soldfromcountyid and soldfrom cityid from states using the input values for the stored proc.
+--Then do a update query on the runawaysevents table..
+select ownerid into var_uuid_ownerid from runawayevents where runawayid=var_uuid_runawayid and runaway_ad_id=var_uuid_runawayadid;
+select StateID into var_uuid_statecaughtid from STATES where name= in_statecaught;
+select StateID into var_uuid_statesoldid from STATES where name= in_statesold;
+-- insert into county table
+IF (NOT EXISTS (SELECT countyid from COUNTIES where NAME = in_countysold)) THEN
+INSERT into COUNTIES values (uuid_generate_v4(),var_uuid_statesoldid,in_countysold,null, null,null);
+END IF;
+-- insert into city table
+IF NOT EXISTS (SELECT CityID from CITIES where NAME = in_citysold) THEN
+INSERT into cities values (uuid_generate_v4(),in_citysold,var_uuid_statesoldid,null, null);
+END IF;
+SELECT CountyID into var_uuid_countysoldid from COUNTIES where NAME = in_countysold;
+SELECT CityID into var_uuid_citysoldid from CITIES where NAME = in_citysold;
+update runawayevents set ownerid=var_uuid_ownerid,statecaughtid=var_uuid_statecaughtid,soldfromstateid=var_uuid_statesoldid,soldfromcountyid=var_uuid_countysoldid,
+ soldfromcityid=var_uuid_citysoldid,dateentered=in_dateentered,slavewearingdesc=in_slavewearingdesc,slavelanguagespoken=in_slavelanguagespoken,wasslaverecentlysold=in_wasslaverecentlysold,headeddesc=in_headeddesc,washeadedhome=in_washeadedhome,
+ ranalone=in_ranalone,ranwithnumber=in_ranwithnumber,motherandchildren=in_motherandchildren,ran_mid_forcedmigration=in_ranmidforcedmigration,notes=in_runawayeventnotes,slavemarksscarsmutilations=in_slavemarksscarmutilation,
+ isageapproximate=in_isageapproximate,wascaught=in_wascaught,reward=in_reward where runawayid=var_uuid_runawayid and runaway_ad_id=var_uuid_runawayadid;
+
+--get all the slaves_to_childrenids from slaves_to_children where runawayid= var_runawyid and runawaysadid=var_runnawayadid.
+--Use this info..have a loop to go runnawaychildid and update the name, age and gender.
+--get all the children for a particular runaway from slaves to clidren table
+--delete all those entires from runawaychildren.Then delete the entries
+delete from runawaychildren where runawaychildid in (select runawaychildid from slaves_to_children where runawayid=var_uuid_runawayid);
+delete from slaves_to_children where runawayid=var_uuid_runawayid;
+--insert into RunawayChildren and Slaves_To_Children table
+if in_childinfo is NOT NULL then
+FOR i in array_lower(in_childinfo,1)..array_upper(in_childinfo,1)
+LOOP
+--raise notice 'here';
+var_uuid_runawaychildid=uuid_generate_v4();
+INSERT into RunawayChildren values(var_uuid_runawaychildid,in_childinfo[i].childage, in_childinfo[i].childgender, in_childinfo[i].childname);
+INSERT INTO Slaves_To_Children values(uuid_generate_v4(),var_uuid_runawayid, var_uuid_runawaychildid);
+END LOOP;
+end if;
+
+
+END IF;
+-- update completion % into the ads_table
+update ads set ad_completion=in_ad_completion where adid=cast(in_adid as uuid);
+-- now insert the same details to the log table along with the timestamp
+select current_timestamp into var_cur_time;
+INSERT INTO logs_table(
+   log_id,
+            adid, newspaper_statename, newspaper_countyname, newspaper_cityname,
+            newspapername, owner_fname, owner_lname, ownerprevfname, ownerprevlname,
+            newspaperdistdate, sourceurl, runawayadsnotes, pagenumber, isjailor,
+            slavename, slave_gender, slave_age, slave_height, slave_weight,
+            slave_builddesc, slave_marksphyattributes, slave_notes, slave_color,
+            slave_childinfo, slave_statecaught, slave_statesold, slave_countysold,
+            slave_citysold, dateentered, slavewearingdesc, slavelanguagespoken,
+            wasslaverecentlysold, headeddesc, washeadedhome, ranalone, ranwithnumber,
+            motherandchildren, ranmidforcedmigration, runawayeventnotes,
+            slavemarksscarmutilation, isageapproximate, wascaught, reward,
+            ownerstatename, ownercityname, ownercountyname, ad_completion,
+            time_changed)
+    VALUES (uuid_generate_v4(),in_adid , in_statename , in_countyname , in_cityname ,
+            in_newspapername , in_fname , in_lname , in_ownerprevfname , in_ownerprevlname ,
+            in_newspaperdistdate , in_sourceurl , in_runawayadsnotes , in_pagenumber , in_isjailor ,
+            in_slavename , in_gender , in_age , in_height , in_weight ,
+            in_builddesc , in_marksphyattributes , in_notes , in_color ,
+            in_childinfo , in_statecaught , in_statesold , in_countysold ,
+            in_citysold , in_dateentered , in_slavewearingdesc , in_slavelanguagespoken ,
+            in_wasslaverecentlysold , in_headeddesc , in_washeadedhome , in_ranalone , in_ranwithnumber ,
+            in_motherandchildren , in_ranmidforcedmigration , in_runawayeventnotes ,
+            in_slavemarksscarmutilation , in_isageapproximate , in_wascaught , in_reward ,
+            in_ownerstatename , in_ownercityname , in_ownercountyname , in_ad_completion ,
+            var_cur_time);
+
+
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION insert_into_fotm(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, date, character varying, character varying, integer, boolean, character varying, character, double precision, double precision, double precision, character varying, character varying, character varying, character varying, childinfo[], character varying, character varying, character varying, character varying, date, character varying, character varying, boolean, character varying, boolean, boolean, integer, boolean, boolean, character varying, character varying, boolean, boolean, double precision, character varying, character varying, character varying, integer)
+  OWNER TO postgres;
+
+ Trigger for OCR logs
+
+CREATE OR REPLACE FUNCTION insert_into_ocr_logs_table()
+  RETURNS trigger AS
+$BODY$
+BEGIN
+  INSERT INTO ocrlogs_table (logid, adid, filename,filepath,filetype,ocr_text,tags,ad_completion,inserted_time) VALUES(uuid_generate_v4(), NEW.adid, NEW.filename, NEW.filepath,NEW.filetype,NEW.ocr_text,NEW.tags,NEW.ad_completion,current_timestamp);
+  return new;
+END;
+ $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION insert_into_ocr_logs_table()
+  OWNER TO postgres;
+
+CREATE TRIGGER ocr_log_trigger AFTER UPDATE
+ON ads
+FOR EACH row
+EXECUTE PROCEDURE insert_into_ocr_logs_table();
