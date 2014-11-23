@@ -1,0 +1,91 @@
+@import url(http://fonts.googleapis.com/css?family=Allura);
+@import url(http://fonts.googleapis.com/css?family=Cardo:400,700,400italic);
+
+/* Page body */
+body {
+	background-image: url("../img_home/background.jpg");
+	font-family: Cardo, serif;
+	background-size: 100%;
+}
+
+/* Header */
+.cornell-header {
+	font-family: verdana, sans-serif;
+	color: #222;
+	height: 45px;
+	background-color: #4d4e53;
+}
+
+.cornell-search {
+	text-align: right;
+	margin-top: 10px;
+}
+
+.cornell-search a {
+	color: white;
+	text-decoration: none;
+	font-size: 0.8em;
+	padding: 5px 15px;
+}
+
+.cornell-search a:hover {
+	background: #990f26;
+}
+
+
+.disable {
+	pointer-events: none;
+	cursor: default;
+}
+
+/* Buttons */
+.btn-info {
+	color: #fff;
+	background-color: #CC9966;
+	border-color: #ded1ed;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active {
+	color: #fff;
+	background-color: #FFCC99;
+	border-color: #ded1ed;
+}
+
+.btn-default {
+	color: #000;
+	background-color: #ded1ed;
+	border-color: #210d29;
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active {
+	color: #ded1ed;
+	background-color: #210d29;
+	border-color: #ded1ed;
+}
+
+.btn-search {
+	margin-top: 20px;
+}
+
+.container{
+	width:68%;
+}
+
+.panel {
+	background-color: #faf7ee;
+	font-size: 20px;
+	border-color: grey;
+}
+
+h2{
+	font-size: 60px;
+	font-family: "Allura", serif;
+}
+
+

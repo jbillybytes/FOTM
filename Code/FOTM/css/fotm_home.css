@@ -1,0 +1,135 @@
+@import url(http://fonts.googleapis.com/css?family=Allura);
+@import url(http://fonts.googleapis.com/css?family=Cardo:400,700,400italic);
+
+/* Page font and background */
+body {
+	background-image: url("../img/background.jpg");
+	background-size: 100%;
+	background-attachment: fixed;
+	font-family: Cardo, serif;
+}
+
+/* Container */
+section.container {
+	width: 70%;
+	margin-top: 50px;
+}
+@media (max-width: 991px) {
+	section.container {
+		width: 85%;
+	}
+}
+
+/* Header */
+.cornell-header {
+	font-family: verdana, sans-serif;
+	color: #222;
+	height: 45px;
+	background-color: #4d4e53;
+}
+.cornell-search {
+	text-align: right;
+	margin-top: 10px;
+}
+.cornell-search a {
+	color: white;
+	text-decoration: none;
+	font-size: 0.8em;
+	padding: 5px 15px;
+}
+.cornell-search a:hover {
+	background: #990f26;
+}
+
+/* Fix the header */
+@media (min-width: 1200px) {
+	body {
+		padding-top: 110px;
+	}
+	.cornell-header {
+		position: fixed;
+		width: 100%;
+		top: 0;
+		z-index: 100;
+	}
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+	body {
+		padding-top: 110px;
+	}
+	.cornell-header {
+		position: fixed;
+		width: 100%;
+		top: 0;
+		z-index: 100;
+	}
+}
+
+/* Panel */
+.panel {
+	background-color: #faf7ee;
+	font-size: 20px;
+	border-color: #a65400;
+}
+
+/* Welcome message */
+h2 {
+	font-family: "Allura", serif;
+	font-size: 3em;
+}
+
+/* Buttons */
+.btn-info {
+	color: #fff;
+	background-color: #daa25f;
+	border-color: #b5772d;
+}
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active {
+	color: #fff;
+	background-color: #b5772d;
+	border-color: #daa25f;
+}
+.btn-search {
+	margin-top: 20px;
+}
+.btn-lg {
+	width: 50px;
+	height: 50px;
+	border-radius: 25px;
+}
+
+.form-search .legend {
+	font-size: 25px;
+	display: block;
+	width: 80%;
+	padding: 0;
+	margin-bottom: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	line-height: inherit;
+	color: #333;
+	border: 0;
+	border-bottom: 1px solid #e5e5e5;
+}
+.form-search .form-control {
+	width: 75%;
+	margin: auto;
+}
+
+/* Form success and failure */
+#form-success,
+#form-failure {
+	position: absolute;
+	top: 350px;
+	left: 40%;
+	width: 20%;
+	z-index: 100;
+}
+#form-success .panel-body,
+#form-failure .panel-body {
+	background-color: #b5772d;
+	color: white;
+}

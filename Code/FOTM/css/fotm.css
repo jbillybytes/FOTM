@@ -1,21 +1,16 @@
 @import url(http://fonts.googleapis.com/css?family=Allura);
 @import url(http://fonts.googleapis.com/css?family=Cardo:400,700,400italic);
 
+/* Page font */
 body {
-	font-family: Cardo, serif;
-	background-image: url("../img/freedom-bg-50.png");
-	background-repeat: no-repeat;
+	background-image: url("../img/background_opacity.jpg");
+	background-size: 100%;
 	background-attachment: fixed;
-	background-position: 0% 100%;
+	font-family: Cardo, serif;
 }
 
-@media (max-width: 1199px) {
-	body {
-		background: none;
-	}
-}
-
-/*@media (min-width: 768px) {
+/* Responsive width */
+@media (min-width: 768px) {
 	.container {
 		width: 90%;
 		min-width: 750px;
@@ -30,107 +25,148 @@ body {
 	.container {
 		width: 80%;
 	}
-}*/
+}
 
+/* Header */
 .cornell-header {
 	font-family: verdana, sans-serif;
 	color: #222;
 	height: 45px;
 	background-color: #4d4e53;
 }
-
 .cornell-search {
 	text-align: right;
 	margin-top: 10px;
 }
-
 .cornell-search a {
 	color: white;
-    text-decoration: none;
-    font-size: 0.6875em;
-    padding: 5px 15px;
+	text-decoration: none;
+	font-size: 0.8em;
+	padding: 5px 15px;
 }
-
 .cornell-search a:hover {
-    background: #990f26;
+	background: #990f26;
 }
 
+/* Navigation bar */
 .navbar {
 	border: 0px;
 	border-radius: 0px;
 }
-
 .navbar-default {
-	background-color: #210d29;
+	background-color: #352112;
 }
-
 .navbar-default .navbar-toggle {
 	background-color: #3a114a;
 	margin-top: 10px;
 	border-color: transparent;
 }
-
 .navbar-default .navbar-toggle .icon-bar {
-  background-color: white;
+	background-color: white;
 }
-
 .navbar-default .navbar-toggle:hover,
 .navbar-default .navbar-toggle:focus {
 	background-color: #3a114a;
 }
-
 .navbar-default .navbar-brand {
 	color: #e6b91c;
-    font-family: "Allura", serif;
-    text-shadow: 0 0 0;
-    font-size: 2.5em;
-    padding-top: 20px;
+	font-family: "Allura", serif;
+	text-shadow: 0 0 0;
+	font-size: 3em;
+	padding-top: 20px;
 }
-
-@media (min-width: 768px) and (max-width: 991px) {
-	.navbar-default .navbar-brand {
-	    font-size: 2em;
-	}
-}
-
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus{
 	text-decoration: none;
 	color: #e6b91c;
 }
-
+.navbar-default .navbar-collapse {
+	height: 100%;
+	margin: 0;
+}
 .navbar-default .navbar-nav {
-	margin-top: 15px;
-	margin-bottom: 5px;
+	height: 100%;
+	margin: 0;
 }
-
 .navbar-default .navbar-nav li a {
-	color: #c4bbc8;
-	padding: 5px 15px;
-	font-size: 1.2em;
+	color: #e6b91c;
+	font-size: 1.3em;
 }
-
-.navbar-default .navbar-nav li a:hover {
-	color: white;
+.navbar-default .navbar-nav .active a {
+	color: #352112;
+	background-color: #efe2c1;
+	font-size: 1.3em;
+	margin: 10px 5px 5px 5px;
+	padding: 5px;
+	height: 100%;
 }
-
+.navbar-default .navbar-nav .home a:hover {
+	color: #352112;
+	background-color: #daa25f;
+	font-size: 1.3em;
+}
 @media (min-width: 768px) {
 	.navbar-default .navbar-collapse {
 		float: right !important;
 		padding-right: 0px;
 	}
+	.navbar-default .navbar-nav .home a {
+		height: 50px;
+	}
 }
 .navbar-default .navbar-collapse {
-		margin-right: 0px;
-		padding-right: 
-	}
-.panel-primary {
-	border-color: #e8e1d6;
+	margin-right: 0px;
+}
+.disable {
+	pointer-events: none;
+	cursor: default;
 }
 
+/* Panels */
+.panel-primary {
+	border-color: #a65400;
+}
+.panel-primary .panel-heading {
+	background-color: #efe2c1;
+	border-color: #e9d8ad;
+	color: black;
+	font-size: 2em;
+}
+.panel-primary .panel-heading .panel-title {
+	font-size: 20px;
+	text-align: center;
+}
+.panel-primary .panel-body {
+	background-color: #faf7ee;
+	border-radius: 4px;
+}
+.panel-primary .panel-footer {
+	background-color: #faf7ee;
+	border-color: #e9d8ad;
+}
+
+/* Transcriber image */
+.panel-body img {
+	width: 100%;
+}
+
+/* Wells */
+.well {
+	background-color: #faf7ee;
+	border-color: #a65400;
+}
+.well legend {
+	font-size: 20px;
+	text-align: center;
+}
+.well label {
+	font-size: 15px;
+}
+
+/* Fix the header, navbar, and also the transcribed text for the crowdsourcing page */
 @media (min-width: 1200px) {
 	body {
-		padding-top: 110px;
+		padding-top: 65px;
 	}
 	.cornell-header {
 		position: fixed;
@@ -141,16 +177,14 @@ body {
 	.navbar-default {
 		position: fixed;
 		width: 100%;
-		top: 45px;
+		top: 0;
 		z-index: 100;
 	}
 	.fixed {
 		position: fixed;
-		width: 550px;
-/*		width: 38%;
-*/	}
+		width: 38%;
+	}
 }
-
 @media (min-width: 992px) and (max-width: 1199px) {
 	body {
 		padding-top: 110px;
@@ -164,79 +198,240 @@ body {
 	.navbar-default {
 		position: fixed;
 		width: 100%;
-		top: 45px;
+		top: 0;
 		z-index: 100;
 	}
 	.fixed {
 		position: fixed;
-		width: 450px;
-/*		width: 40%;
-*/	}
+		width: 40%;
+	}
 }
 
-.panel-primary .panel-heading {
-	background-color: #e8e1d6;
-	border-color: #e8e1d6;
-	color: #210d29;
-}
-
+/* Form */
 .form-group {
 	padding-left: 15px;
 	padding-right: 15px;
 }
-
 .form-group .radio {
 	padding-left: 20px;
 }
-
 .form-horizontal .control-label {
 	text-align: left;
 }
-
-.prev-next {
-	padding-left: 30px;
-	padding-right: 30px;
+.form-group input[readonly="readonly"] {
+	background-color: #f3ebd5;
+}
+form h4 {
+	border-bottom: 1px solid #e5e5e5;
+	color: #333;
+	margin-bottom: 20px;
 }
 
+/* Buttons */
 .btn-info {
 	color: #fff;
-	background-color: #4a0a79;
-	border-color: #e8e1d6;
+	background-color: #daa25f;
+	border-color: #b5772d;
 }
-
 .btn-info:hover,
 .btn-info:focus,
 .btn-info:active,
 .btn-info.active {
 	color: #fff;
-	background-color: #3b0861;
-	border-color: #e8e1d6;
+	background-color: #b5772d;
+	border-color: #daa25f;
+}
+.prev-next {
+	padding-left: 30px;
+	padding-right: 30px;
 }
 
-.btn-default {
-	color: #000;
-	background-color: #e8e1d6;
-	border-color: #210d29;
+/* Gallery Thumbs */
+.thumbs {
+	margin: -20px auto 0 auto;
+}
+.thumbs .thumbnail {
+	list-style:none;
+	padding: 0;
+	margin: 40px 2% 0 2%;
+	float: left;
+	position: relative;
+	width: 16%;
+	height: 230px;
+	overflow:hidden;
+	border: 2px solid #e8e1d6;
+	background-color: white;
+}
+@media (max-width: 549px) {
+	.thumbs .thumbnail {
+		margin: 40px 5% 0 5%;
+		width: 90%;
+	}
+}
+@media (min-width: 550px) and (max-width: 879px) {
+	.thumbs .thumbnail {
+		margin: 40px 4% 0 4%;
+		width: 42%;
+	}
+}
+@media (min-width: 880px) and (max-width: 1239px) {
+	.thumbs .thumbnail {
+		margin: 40px 3% 0 3%;
+		width: 27%;
+	}
+}
+@media (min-width: 1240px) and (max-width: 1600px) {
+	.thumbs .thumbnail {
+		margin: 40px 2% 0 2%;
+		width: 21%;
+	}
+}
+.thumbs .thumbnail:hover {
+	border: 2px solid brown;
+}
+.panel-primary img {
+	width: 100%;
+}
+.thumbs span {
+	background: #efe2c1;
+	opacity:0.92;
+	filter:alpha(opacity=95);
+	bottom: 0;
+	color: #362f2d;
+	height: 90px;
+	left: 0;
+	right: 0;
+	line-height: 20px;
+	position: absolute;
+	width: 100%;
+}
+.thumbs span:hover {
+	opacity:1;
+	filter:alpha(opacity=100);
+}
+.thumbs span .title,
+.thumbs span .desc,
+.thumbs span .date,
+.thumbs span a {
+	padding:0 10px 0 10px;
+}
+.thumbs span .title {
+	font-size:18px;
+	padding-top:5px;
+	font-weight:bold;
+}
+.thumbs span .desc {
+	padding-top:5px;
+	padding-bottom: 5px;
+}
+.thumbs span .date {
+	padding-top:5px;
+	padding-bottom: 5px;
+	color:#3a114a;
+	float:right;
+	font-weight:bold;
+}
+.progress {
+	margin: 5px 10px 0 10px;
 }
 
-.btn-default:hover,
-.btn-default:focus,
-.btn-default:active,
-.btn-default.active {
-	color: #fff;
-	background-color: #210d29;
-	border-color: #e8e1d6;
+/* Paging */
+.clear {
+	clear: both;
+}
+.pagination {
+	text-align: right;
+}
+.pagination li a {
+	color: black;
+	background-color: #efe2c1;
+	border: 1px solid #b5772d;
+}
+.pagination li a:hover,
+.pagination li a:focus {
+	color: white;
+	background-color: #daa25f;
+	border: 1px solid #b5772d;
+}
+.pagination .active a,
+.pagination .active a:hover,
+.pagination .active a:focus {
+	color: white;
+	background-color: #b5772d;
+	border: 1px solid #b5772d;
+}
+.pagination .disabled a,
+.pagination .disabled a:hover,
+.pagination .disabled a:focus {
+	color: #b5772d;
+	background-color: #efe2c1;
+	border: 1px solid #b5772d;
 }
 
-@media (min-width: 768px) and (max-width: 991px) {
-	.panel-body {
-		height: 155px;
+/* Progress bar on third tab*/
+ol.progtrckr {
+	margin: 0 0 50px 0;
+	padding: 0;
+	list-style-type none;
+}
+ol.progtrckr li {
+	display: inline-block;
+	text-align: center;
+	line-height: 3em;
+	width: 20%;
+}
+ol.progtrckr li.progtrckr-done {
+	color: black;
+	border-bottom: 4px solid yellowgreen;
+}
+ol.progtrckr li.progtrckr-todo {
+	color: silver; 
+	border-bottom: 4px solid silver;
+}
+ol.progtrckr li:after {
+	content: "\00a0\00a0";
+}
+ol.progtrckr li:before {
+	position: relative;
+	bottom: -2.5em;
+	float: left;
+	left: 50%;
+	line-height: 1em;
+}
+ol.progtrckr li.progtrckr-done:before {
+	content: "\2713";
+	color: white;
+	background-color: yellowgreen;
+	height: 1.2em;
+	width: 1.2em;
+	line-height: 1.2em;
+	border: none;
+	border-radius: 1.2em;
+}
+ol.progtrckr li.progtrckr-todo:before {
+	content: "\039F";
+	color: silver;
+	background-color: #faf7ee;
+	font-size: 1.5em;
+	bottom: -1.6em;
+}
+@media (min-width: 992px) and (max-width: 1299px) {
+	ol.progtrckr li {
+		width: 33%;
 	}
 }
 
-.panel-body img {
-	width: 100%;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+/* Form success and failure */
+#form-success,
+#form-failure {
+	position: absolute;
+	top: 150px;
+	left: 40%;
+	width: 20%;
+	z-index: 10;
+}
+#form-success .panel-body,
+#form-failure .panel-body {
+	background-color: #b5772d;
+	color: white;
 }

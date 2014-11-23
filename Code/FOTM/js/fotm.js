@@ -1,11 +1,13 @@
 'use strict';
 
-var fotmApp = angular.module('fotmApp', ['fotmForm']);
+var fotmApp = angular.module('fotmApp', ['fotmForm', 'fotmSearch', 'fotmTranscr']);
 
+// Module for crowdsourcing page
 var fotmForm = angular.module('fotmForm', []);
 
-fotmForm.controller('fotmCtrl', ['$scope', function($scope){
+fotmForm.controller('formCtrl', ['$scope', function($scope) {
 
+	// Fields in the first part of the form
 	$scope.news = {
 		name : {
 			check : function () {
@@ -55,6 +57,7 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 		},
 	};
 
+	// Fields in the second part of the form
 	$scope.ensl = {
 		first : {
 			check : function() {
@@ -94,6 +97,7 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 		}
 	};
 
+	// Fields in the third part of the form
 	$scope.runw = {
 		name : {
 			check : function() {
@@ -130,15 +134,10 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 				$scope.hasNumber($scope.runw.lang);
 			},
 			error : false
-		},
-		prof : {
-			check : function () {
-				$scope.hasNumber($scope.runw.prof);
-			},
-			error : false
 		}
 	};
 
+	// Fields in the fourth part of the form
 	$scope.event = {
 		countySold : {
 			check : function() {
@@ -190,6 +189,7 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 		}
 	};
 
+	// Fields in the last (fifth) part of the form
 	$scope.child = {
 		number : {
 			check : function() {
@@ -197,14 +197,6 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 			},
 			error : false
 		},
-		// range : function() {
-		// 	if ($scope.child.number.input === undefined || $scope.child.number.input === "") {
-		// 		return [];
-		// 	}
-		// 	else {
-		// 		return new Array(Math.min(parseInt($scope.child.number.input),10));
-		// 	}
-		// },
 		oneName : {
 			check : function () {
 				$scope.hasNumber($scope.child.oneName);
@@ -265,7 +257,7 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 	}
 
 	$scope.isNumber = function(name) {
-		if ((/^[\d]+$/.test(name.input)) || name.input === "" || name.input === undefined) {
+		if ((/^\d+$/.test(name.input)) || name.input === "" || name.input === undefined) {
 			name.error = false;
 		}
 		else {
@@ -274,7 +266,7 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 	}
 
 	$scope.isFloat = function(name) {
-		if ((/^[\d]+(\.[\d]+)?$/.test(name.input)) || name.input === "" || name.input === undefined) {
+		if ((/^\d+(\.\d+)?$/.test(name.input)) || name.input === "" || name.input === undefined) {
 			name.error = false;
 		}
 		else {
@@ -283,15 +275,17 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 	}
 
 	$scope.isDate = function(input) {
-		return /^(0\d|1[0-2])\/([0-2]\d|3[01])\/[\d]{4}$/.test(input);
+		return /^(0\d|1[0-2])\/([0-2]\d|3[01])\/\d{4}$/.test(input);
 	}
 
 	$scope.isUrl = function(input) {
-		return (/^(https?:\/\/|www\.)/.test(input)) && !(/[\s]/.test(input));
+		return (/^(https?:\/\/|www\.)/.test(input)) && !(/\s/.test(input));
 	}
 
+	// Part of the form
 	$scope.part = 1;
 
+	// Checks for errors in any of the fields
 	$scope.hasError = function(formPart) {
 		for (var index in formPart) {
 			if (formPart[index].error) {
@@ -301,33 +295,118 @@ fotmForm.controller('fotmCtrl', ['$scope', function($scope){
 		return false;
 	}
 
+	// Goes to the next part of the form
+	// It also checks for errors , and prevent the user from going to the next part if there are any errors
+	// If there is no error, it updates the completion of the form, but only on first time (when the user clicks on previous and then next, the value won't change)
 	$scope.next = function () {
 		if (($scope.hasError($scope.news)) || ($scope.hasError($scope.ensl)) || ($scope.hasError($scope.runw)) || ($scope.hasError($scope.event)) || ($scope.hasError($scope.child))) {
 			alert("You have some errors in your form, please correct them before going to the next part.");
 		}
 		else {
+			$scope.progressOnNext($scope.part);
 			$scope.part += 1;
 		}
 	}
 
-
-
+	// Goes to the previous part of the form
 	$scope.previous = function () {
-		$scope.part -= 1;
-	}
-
-	$scope.submit = function(event) {
-		if (($scope.hasError($scope.news)) || ($scope.hasError($scope.ensl)) || ($scope.hasError($scope.runw)) || ($scope.hasError($scope.event)) || ($scope.hasError($scope.child))) {
-			alert("You have some errors in your form, please correct them before submitting.");
-			event.preventDefault();
-			return false;
+		if ($scope.part != 1){
+			$scope.progressOnPrevious($scope.part);
+			$scope.part -= 1;
 		}
 	}
 
+	// Prevent the user from submitting the form when pressing the "Enter" key
+	// Without this function, the user may submit the form by pressing this key inadvertently
 	$scope.blockEnter = function(keyEvent) {
 		if (keyEvent.which === 13) {
 			keyEvent.preventDefault();
 		}
 	}
 
+	// Function called when the user goes to the next part
+	$scope.progressOnNext = function(n) {
+		switch (n) {
+			case 1:
+				$("#1").attr("class", "progtrckr-done");
+				break;
+			case 2:
+				$("#2").attr("class", "progtrckr-done");
+				break;
+			case 3:
+				$("#3").attr("class", "progtrckr-done");
+				break;
+			case 4:
+				$("#4").attr("class", "progtrckr-done");
+				break;
+		}
+	}
+
+	// Function called when the user goes to the previous part
+	$scope.progressOnPrevious = function(n) {
+		switch (n) {
+			case 2:
+				$("#1").attr("class", "progtrckr-todo");
+				break;
+			case 3:
+				$("#2").attr("class", "progtrckr-todo");
+				break;
+			case 4:
+				$("#3").attr("class", "progtrckr-todo");
+				break;
+			case 5:
+				$("#4").attr("class", "progtrckr-todo");
+				break;
+		}
+	}
+
+	// Function called on the submission of the form, when the user click on "Back to transcriber" or "Submit"
+	// First, it assigns the right action to the form
+	// Then, it checks if any error is present in the form, and if this is the case, displays a message and prevent the user from submitting
+	$scope.submitForm = function(action) {
+		$("#form").attr('action', action);
+		if (($scope.hasError($scope.news)) || ($scope.hasError($scope.ensl)) || ($scope.hasError($scope.runw)) || ($scope.hasError($scope.event)) || ($scope.hasError($scope.child))) {
+			alert("You have some errors in your form, please correct them before submitting.");
+		}
+		else {
+			$("#form").submit();
+		}
+	}
+}]);
+
+// Module for home page
+var fotmSearch = angular.module('fotmSearch', []);
+
+fotmSearch.controller('searchCtrl', ['$scope', '$timeout', function($scope, $timeout) {
+	angular.element(document).ready(function() {
+		$("#search-form").submit(function() {
+			if($("#tags-input").val()=="") {
+				$("#tags-input").remove();
+			}
+		});
+		$timeout($scope.fade_out, 3000);
+	});
+
+	$scope.fade_out = function() {
+		$("#form-success").fadeOut("slow");
+		$("#form-failure").fadeOut("slow", function() {
+			window.location = 'home.php';
+		});
+	}
+}]);
+
+// Module for transcriber page
+var fotmTranscr = angular.module('fotmTranscr', []);
+
+fotmTranscr.controller('transcrCtrl', ['$scope', '$timeout', function($scope, $timeout) {
+	angular.element(document).ready(function() {
+		$timeout($scope.fade_out, 3000);
+	});
+
+	$scope.fade_out = function() {
+		$("#form-success").fadeOut("slow");
+		$("#form-failure").fadeOut("slow", function() {
+			window.location = 'transcriber.php';
+		});
+	}
 }]);
