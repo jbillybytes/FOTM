@@ -1,0 +1,14 @@
+
+PHP SETUP 
+1) Install XAMPP (https://www.apachefriends.org)
+2) Enable PostgreSQL on XAMPP:
+    Go to PathToXampp/xampp/php/php.ini and open the file
+    Find the line which contains ";extension=php_pgsql.dll" and uncomment it (remove semi-colon)
+    If there is still a problem, find the line which contains ";extension=php_pdo_pgsql.dll" and uncomment it
+3) Install GhostScript (http://ghostscript.com/download/, then take the first one)
+4) Install ImageMagick:
+    Take ImageMagick-6.7.7-5-Q16-windows-dll (available here:http://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/binaries/)
+    Install it in a directory with no spaces in the name
+    Download Imagick DLL: PHP5.5.x version from http://www.peewit.fr/imagick/
+    Copy this DLL to xampp/php/ext
+    In the php.ini file, add the line: extension=php_imagick.dll
