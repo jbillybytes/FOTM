@@ -135,7 +135,7 @@
                   </div>
                   <div class="row">
                     <div class="form-group">
-                      <label class="control-label" for="tag">Enter any tag corresponding to this ad here, separated by comas</label>
+                      <label class="control-label" for="tag">Enter any tags to help you find this ad later, separated by comas</label>
                       <input type="text" class="form-control" name="tag" id="tag" value="<?php echo htmlspecialchars($arr['tags']); ?>">
                     </div>
                   </div>
