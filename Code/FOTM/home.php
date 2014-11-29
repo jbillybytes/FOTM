@@ -130,8 +130,8 @@
         <div class="panel-body text-center">
           <div class= "welcome" ng-hide="welcome">
             <h2>Welcome to Freedom on the Move website</h2>
-            <div class="well">
-              <a href="#" ng-hide = "click" ng-click="slider = !slider; show = !show; welcome = !welcome; click = !click" style="color:grey"> - Click to view our data - </a>
+            <div>
+              <a href="#" ng-hide = "click" ng-click="slider = !slider; show = !show; welcome = !welcome; click = !click" style="color:grey"><img src = "img/enter-button.gif" height="120"></a>
             </div>
           </div>
           <form class="form-search" id="search-form" action="newspaper_ads.php" method="GET">

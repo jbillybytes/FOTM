@@ -11,7 +11,7 @@ body {
 
 /* Container */
 section.container {
-	width: 64%;
+	width: 55%;
 	margin-top: 50px;
 }
 
@@ -37,40 +37,29 @@ section.container {
 }
 
 /* Fix the header */
-@media (min-width: 1200px) {
-	body {
-		padding-top: 110px;
-	}
-	.cornell-header {
-		position: fixed;
-		width: 100%;
-		top: 0;
-		z-index: 100;
-	}
+body {
+	padding-top: 50px;
 }
-@media (min-width: 992px) and (max-width: 1199px) {
-	body {
-		padding-top: 110px;
-	}
-	.cornell-header {
-		position: fixed;
-		width: 100%;
-		top: 0;
-		z-index: 100;
-	}
+.cornell-header {
+	position: fixed;
+	width: 100%;
+	top: 0;
+	z-index: 100;
 }
 
 /* Panel */
 .panel {
 	background-color: #faf7ee;
 	font-size: 20px;
-	border-color: #a65400;
+	border-color: #C48818;
+	border-style: inset;
+	border-width: 3px;
 }
 
 /* Welcome message */
 h2 {
 	font-family: "Allura", serif;
-	font-size: 2.2em;
+	font-size: 50px;
 }
 
 /* Buttons */
